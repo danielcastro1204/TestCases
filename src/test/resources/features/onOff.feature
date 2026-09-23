@@ -31,7 +31,7 @@ Feature: Yo como tester quiero probar la funcionalidad de interruptor inteligent
     * match responseStatus == 409
     * match response == { error: 'Invalid transition: the switch is already on' }
 
-    @startOn @Issue-2
+    @startOn @Issue-1
     Scenario: Verificar que el interruptor puede entenderse
       * def response = call read('@smoketest')
       * eval if (response.state == 'off') karate.call(read('@doOn'))
