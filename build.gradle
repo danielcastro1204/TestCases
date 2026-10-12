@@ -21,7 +21,35 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    systemProperty 'karate.output.dir', 'target/'
-    systemProperty "karate.options", System.getProperty("karate.options")
 
+    // Los .feature contienen tildes: se fuerza UTF-8 en la JVM de pruebas (también en Windows).
+    jvmArgs '-Dfile.encoding=UTF-8'
+
+    // Los reportes de Karate se escriben en target/ (ver runner.java)
+    systemProperty 'karate.output.dir', 'target/'
+
+    // Permite filtrar por tag desde la línea de comandos:
+    //   ./gradlew test -Dkarate.options="--tags @Issue-3"
+    // Solo se transmite al runner cuando se proporciona (evita pasar un valor null).
+    if (System.getProperty('karate.options')) {
+        systemProperty 'karate.options', System.getProperty('karate.options')
+    }
+
+    // Permite apuntar las pruebas a otro servidor (por defecto, el del taller):
+    //   ./gradlew test -DbaseUrl=http://localhost:8080/api/
+    if (System.getProperty('baseUrl')) {
+        systemProperty 'baseUrl', System.getProperty('baseUrl')
+    }
+
+    // Las pruebas modifican estado remoto: nunca se consideran "up-to-date".
+    outputs.upToDateWhen { false }
+
+    testLogging {
+        events 'passed', 'failed', 'skipped'
+        showStandardStreams = false
+    }
+}
+
+clean {
+    delete 'target'
 }
