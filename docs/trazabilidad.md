@@ -38,10 +38,8 @@ Requisito → caso de prueba → escenario → tags → Issue → archivo.
 
 ## Estado de los Issues en GitHub
 
-- Issues **#1 a #10** creados y verificados en el repositorio (los #2–#10 se crearon con la ejecución de `crear-issues.ps1`; el #1 ya existía).
-- Issues **#11 a #23** (transiciones válidas V2–V6, rechazos por estado TC-16..19 y combinaciones del dron TC-20..23): **pendientes de crear**; se crean ejecutando de nuevo `docs/crear-issues.ps1` (idempotente: actualiza los existentes y crea los que faltan).
-- Project Board **TestCases-Karate** creado; agregar los Issues #11–#23 cuando existan.
-
+- Issues **#1 a #23** creados y verificados en el repositorio (uno por caso; los #16–#19 son Scenario Outline y comparten Issue por estado de origen).
+- Los Issues nuevos se agregaron automáticamente a los tableros *Test Cases* y *TestCases-Karate* (estado Todo).
 ## GitHub Project Board
 
 1. En GitHub → pestaña **Projects** → **New project** → plantilla **Board** → nombre "TestCases - Karate".

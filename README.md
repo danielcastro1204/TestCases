@@ -123,13 +123,13 @@ Se ejecuta en `push` y `pull_request` a `main`/`develop` y manualmente (`workflo
 | Tag inexistente | Gradle pasa con **0 escenarios** → el workflow lo trata como fallo |
 | Ejecución contra la **API real** de Render | **10 de 10 aprobados** (antes de agregar TC-11 a TC-23) |
 | Ejecución en GitHub Actions | **Aprobada**: [run 38319898395](https://github.com/danielcastro1204/TestCases/actions/runs/38319898395), 10 ejecutados / 10 aprobados / 0 fallidos |
-| Issues #1–#10 y Project Board *TestCases-Karate* | Creados en GitHub |
-| Escenarios TC-11 a TC-23 (transiciones válidas e inválidas restantes, combinaciones del dron) | Suite completa de 41 ejecuciones aprobada contra un simulador local; falta ejecutarla contra la API real y crear los Issues #11–#23 |
+| Issues #1–#23 y Project Board *TestCases-Karate* | Creados en GitHub (verificado) |
+| Escenarios TC-11 a TC-23 (transiciones válidas e inválidas restantes, combinaciones del dron) | Suite completa de 41 ejecuciones aprobada contra un simulador local; falta ejecutarla contra la API real (hacer `git push` y revisar Actions) |
 
 ## 12. Acciones pendientes
 
-1. Ejecutar `docs\crear-issues.ps1` otra vez para crear los Issues #11–#23 (actualiza los existentes sin duplicar) y agregarlos al tablero; hacer commit y push para correr los 15 escenarios en Actions.
-2. Ejecutar el workflow manualmente por tag para algunos Issues (ej. `Issue-4`) y comprobar el comentario y la etiqueta `automated-passed`.
+1. `git push` para ejecutar los 41 casos en GitHub Actions contra la API real y anotar el resultado en `docs/matriz-pruebas.md`.
+2. Ejecutar el workflow manualmente por tag para los Issues nuevos (ej. `Issue-16`) y comprobar el comentario y la etiqueta `automated-passed`.
 3. Mover los Issues aprobados a *Done* en el tablero.
 4. Opcional: dejar de versionar `target/` con `git rm -r --cached target`.
 
