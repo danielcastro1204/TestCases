@@ -139,3 +139,5 @@ Se ejecuta en `push` y `pull_request` a `main`/`develop` y manualmente (`workflo
 
 - Render puede tardar ~1 min en responder tras inactividad.
 - El estado del servidor es compartido: no hay ejecución en paralelo; si varias personas usan la misma API al mismo tiempo, un `reiniciar` ajeno puede interferir.
+
+> **Importante (ejecuciones en GitHub):** la API real mantiene un único estado compartido. No lances dos ejecuciones a la vez (p. ej. dos `workflow_dispatch` seguidos con tags distintos): se reinician entre sí y fallan por interferencia, no por defectos de las pruebas. El workflow usa `concurrency` para serializarlas, pero lo más seguro es **una sola ejecución con `testTag` vacío**.

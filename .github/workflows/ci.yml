@@ -13,6 +13,12 @@ on:
         default: ''
 
 # Permisos mínimos: leer el código y comentar/etiquetar Issues
+# La API real guarda UN solo estado compartido (torniquete y dron). Dos ejecuciones simultaneas
+# se reinician mutuamente y producen fallos falsos: se ejecutan una a la vez.
+concurrency:
+  group: karate-api-compartida
+  cancel-in-progress: false
+
 permissions:
   contents: read
   issues: write
