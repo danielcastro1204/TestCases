@@ -1,6 +1,6 @@
 # Issues del taller
 
-Un Issue por escenario. El #1 ya existe y se reutiliza; los demás se crean con `crear-issues.ps1`.
+Un Issue por escenario. Los Issues existentes se actualizan y los que faltan se crean con `crear-issues.ps1`.
 
 ## Issue #1 — [API] TC-01 Consultar el estado actual del torniquete
 
@@ -324,6 +324,431 @@ Un Issue por escenario. El #1 ya existe y se reutiliza; los demás se crean con 
 
 **Criterios de aceptación:**
 - [ ] El escenario existe en el .feature con el tag @Issue-10.
+- [ ] La petición usa el endpoint, método y cuerpo indicados.
+- [ ] Las aserciones comprueban el resultado esperado (código HTTP y cuerpo).
+- [ ] El escenario es independiente de los demás (parte de un estado conocido).
+- [ ] Ejecución en GitHub Actions con resultado `automated-passed`.
+```
+
+## Issue #11 — [API] TC-11 Empujar con la tarjeta validada inicia el giro (S2 a S3)
+
+```markdown
+**ID del caso:** TC-11
+**Ejercicio:** Torniquete del Metro Inteligente (1.7) en torniquete.feature (Bloque 1 - Transición de Estados)
+**Requisito:** REQ-TRN-06
+
+**Descripción:** Empujar con la tarjeta validada inicia el giro (S2 a S3).
+
+**Precondiciones:** Torniquete en S2 (se llega con Validar Tarjeta guardia true).
+
+**Endpoint(s) y método:**
+- `POST /api/torniquete/evento`
+- `GET /api/torniquete/estado`
+
+**Datos de entrada:** `{"evento":"Empujar"}`
+
+**Resultado esperado:** HTTP 200; S2 -> S3 (Girando), valida=true, accion "Girar molinete"; GET: estado S3 e historial de 2 elementos.
+
+**Trazabilidad de automatización:**
+- Tag karate: @Issue-11
+- Archivo feature: src/test/resources/features/torniquete.feature
+- Escenario: `TC-11 Empujar con la tarjeta validada inicia el giro (S2 a S3)`
+- Ejecución individual: `.\gradlew.bat test "-Dkarate.options=--tags @Issue-11"`
+
+**Criterios de aceptación:**
+- [ ] El escenario existe en el .feature con el tag @Issue-11.
+- [ ] La petición usa el endpoint, método y cuerpo indicados.
+- [ ] Las aserciones comprueban el resultado esperado (código HTTP y cuerpo).
+- [ ] El escenario es independiente de los demás (parte de un estado conocido).
+- [ ] Ejecución en GitHub Actions con resultado `automated-passed`.
+```
+
+## Issue #12 — [API] TC-12 Completar giro bloquea de nuevo el torniquete (S3 a S1)
+
+```markdown
+**ID del caso:** TC-12
+**Ejercicio:** Torniquete del Metro Inteligente (1.7) en torniquete.feature (Bloque 1 - Transición de Estados)
+**Requisito:** REQ-TRN-07
+
+**Descripción:** Completar giro bloquea de nuevo el torniquete (S3 a S1).
+
+**Precondiciones:** Torniquete en S3 (Validar Tarjeta true + Empujar).
+
+**Endpoint(s) y método:**
+- `POST /api/torniquete/evento`
+- `GET /api/torniquete/estado`
+
+**Datos de entrada:** `{"evento":"Completar Giro"}`
+
+**Resultado esperado:** HTTP 200; S3 -> S1 (Bloqueado), valida=true, accion null; GET: estado S1 e historial de 3 elementos.
+
+**Trazabilidad de automatización:**
+- Tag karate: @Issue-12
+- Archivo feature: src/test/resources/features/torniquete.feature
+- Escenario: `TC-12 Completar giro bloquea de nuevo el torniquete (S3 a S1)`
+- Ejecución individual: `.\gradlew.bat test "-Dkarate.options=--tags @Issue-12"`
+
+**Criterios de aceptación:**
+- [ ] El escenario existe en el .feature con el tag @Issue-12.
+- [ ] La petición usa el endpoint, método y cuerpo indicados.
+- [ ] Las aserciones comprueban el resultado esperado (código HTTP y cuerpo).
+- [ ] El escenario es independiente de los demás (parte de un estado conocido).
+- [ ] Ejecución en GitHub Actions con resultado `automated-passed`.
+```
+
+## Issue #13 — [API] TC-13 Alarma por falla de energia desde bloqueado pasa a mantenimiento (S1 a S4)
+
+```markdown
+**ID del caso:** TC-13
+**Ejercicio:** Torniquete del Metro Inteligente (1.7) en torniquete.feature (Bloque 1 - Transición de Estados)
+**Requisito:** REQ-TRN-08
+
+**Descripción:** Alarma por falla de energia desde bloqueado pasa a mantenimiento (S1 a S4).
+
+**Precondiciones:** Torniquete en S1 (Bloqueado).
+
+**Endpoint(s) y método:**
+- `POST /api/torniquete/evento`
+- `GET /api/torniquete/estado`
+
+**Datos de entrada:** `{"evento":"Alarma","guardia":true}`
+
+**Resultado esperado:** HTTP 200; S1 -> S4 (Mantenimiento), valida=true, accion "Cortar energía"; GET: estado S4 e historial de 1 elemento.
+
+**Trazabilidad de automatización:**
+- Tag karate: @Issue-13
+- Archivo feature: src/test/resources/features/torniquete.feature
+- Escenario: `TC-13 Alarma por falla de energia desde bloqueado pasa a mantenimiento (S1 a S4)`
+- Ejecución individual: `.\gradlew.bat test "-Dkarate.options=--tags @Issue-13"`
+
+**Criterios de aceptación:**
+- [ ] El escenario existe en el .feature con el tag @Issue-13.
+- [ ] La petición usa el endpoint, método y cuerpo indicados.
+- [ ] Las aserciones comprueban el resultado esperado (código HTTP y cuerpo).
+- [ ] El escenario es independiente de los demás (parte de un estado conocido).
+- [ ] Ejecución en GitHub Actions con resultado `automated-passed`.
+```
+
+## Issue #14 — [API] TC-14 Alarma por falla de energia con paso autorizado pasa a mantenimiento (S2 a S4)
+
+```markdown
+**ID del caso:** TC-14
+**Ejercicio:** Torniquete del Metro Inteligente (1.7) en torniquete.feature (Bloque 1 - Transición de Estados)
+**Requisito:** REQ-TRN-09
+
+**Descripción:** Alarma por falla de energia con paso autorizado pasa a mantenimiento (S2 a S4).
+
+**Precondiciones:** Torniquete en S2 (Validar Tarjeta guardia true).
+
+**Endpoint(s) y método:**
+- `POST /api/torniquete/evento`
+- `GET /api/torniquete/estado`
+
+**Datos de entrada:** `{"evento":"Alarma","guardia":true}`
+
+**Resultado esperado:** HTTP 200; S2 -> S4 (Mantenimiento), valida=true, accion "Cortar energía"; GET: estado S4 e historial de 2 elementos.
+
+**Trazabilidad de automatización:**
+- Tag karate: @Issue-14
+- Archivo feature: src/test/resources/features/torniquete.feature
+- Escenario: `TC-14 Alarma por falla de energia con paso autorizado pasa a mantenimiento (S2 a S4)`
+- Ejecución individual: `.\gradlew.bat test "-Dkarate.options=--tags @Issue-14"`
+
+**Criterios de aceptación:**
+- [ ] El escenario existe en el .feature con el tag @Issue-14.
+- [ ] La petición usa el endpoint, método y cuerpo indicados.
+- [ ] Las aserciones comprueban el resultado esperado (código HTTP y cuerpo).
+- [ ] El escenario es independiente de los demás (parte de un estado conocido).
+- [ ] Ejecución en GitHub Actions con resultado `automated-passed`.
+```
+
+## Issue #15 — [API] TC-15 Reparar restaura el servicio desde mantenimiento (S4 a S1)
+
+```markdown
+**ID del caso:** TC-15
+**Ejercicio:** Torniquete del Metro Inteligente (1.7) en torniquete.feature (Bloque 1 - Transición de Estados)
+**Requisito:** REQ-TRN-10
+
+**Descripción:** Reparar restaura el servicio desde mantenimiento (S4 a S1).
+
+**Precondiciones:** Torniquete en S4 (Alarma guardia true).
+
+**Endpoint(s) y método:**
+- `POST /api/torniquete/evento`
+- `GET /api/torniquete/estado`
+
+**Datos de entrada:** `{"evento":"Reparar"}`
+
+**Resultado esperado:** HTTP 200; S4 -> S1 (Bloqueado), valida=true, accion "Restaurar servicio"; GET: estado S1 e historial de 2 elementos.
+
+**Trazabilidad de automatización:**
+- Tag karate: @Issue-15
+- Archivo feature: src/test/resources/features/torniquete.feature
+- Escenario: `TC-15 Reparar restaura el servicio desde mantenimiento (S4 a S1)`
+- Ejecución individual: `.\gradlew.bat test "-Dkarate.options=--tags @Issue-15"`
+
+**Criterios de aceptación:**
+- [ ] El escenario existe en el .feature con el tag @Issue-15.
+- [ ] La petición usa el endpoint, método y cuerpo indicados.
+- [ ] Las aserciones comprueban el resultado esperado (código HTTP y cuerpo).
+- [ ] El escenario es independiente de los demás (parte de un estado conocido).
+- [ ] Ejecución en GitHub Actions con resultado `automated-passed`.
+```
+
+## Issue #16 — [API] TC-16 Rechazar eventos invalidos con el torniquete bloqueado (S1) [Scenario Outline, 5 ejemplos]
+
+```markdown
+**ID del caso:** TC-16
+**Ejercicio:** Torniquete del Metro Inteligente (1.7) en torniquete.feature (Bloque 1 - Transición de Estados)
+**Requisito:** REQ-TRN-11
+
+**Descripción:** Rechazar eventos invalidos con el torniquete bloqueado (S1) [Scenario Outline, 5 ejemplos].
+
+**Precondiciones:** Torniquete llevado a S1 solo con transiciones válidas (Background reinicia a S1).
+
+**Endpoint(s) y método:**
+- `POST /api/torniquete/evento`
+- `GET /api/torniquete/estado`
+
+**Datos de entrada:** `Validar Tarjeta (guardia false), Empujar, Completar Giro, Alarma (guardia false), Reparar`
+
+**Resultado esperado:** Cada ejemplo: HTTP 200, valida=false, estadoNuevo = estadoAnterior = S1; la forma exacta es accion null o noDefinida=true; el GET confirma que el estado no cambió y que el historial registró el evento rechazado.
+
+**Trazabilidad de automatización:**
+- Tag karate: @Issue-16
+- Archivo feature: src/test/resources/features/torniquete.feature
+- Escenario: `TC-16 Rechazar eventos invalidos con el torniquete bloqueado (S1) [Scenario Outline, 5 ejemplos]`
+- Ejecución individual: `.\gradlew.bat test "-Dkarate.options=--tags @Issue-16"`
+
+**Criterios de aceptación:**
+- [ ] El escenario existe en el .feature con el tag @Issue-16.
+- [ ] La petición usa el endpoint, método y cuerpo indicados.
+- [ ] Las aserciones comprueban el resultado esperado (código HTTP y cuerpo).
+- [ ] El escenario es independiente de los demás (parte de un estado conocido).
+- [ ] Ejecución en GitHub Actions con resultado `automated-passed`.
+```
+
+## Issue #17 — [API] TC-17 Rechazar eventos invalidos con el torniquete autorizado (S2) [Scenario Outline, 5 ejemplos]
+
+```markdown
+**ID del caso:** TC-17
+**Ejercicio:** Torniquete del Metro Inteligente (1.7) en torniquete.feature (Bloque 1 - Transición de Estados)
+**Requisito:** REQ-TRN-12
+
+**Descripción:** Rechazar eventos invalidos con el torniquete autorizado (S2) [Scenario Outline, 5 ejemplos].
+
+**Precondiciones:** Torniquete llevado a S2 solo con transiciones válidas (Background reinicia a S1).
+
+**Endpoint(s) y método:**
+- `POST /api/torniquete/evento`
+- `GET /api/torniquete/estado`
+
+**Datos de entrada:** `Validar Tarjeta (guardia true y false), Completar Giro, Alarma (guardia false), Reparar`
+
+**Resultado esperado:** Cada ejemplo: HTTP 200, valida=false, estadoNuevo = estadoAnterior = S2; la forma exacta es accion null o noDefinida=true; el GET confirma que el estado no cambió y que el historial registró el evento rechazado.
+
+**Trazabilidad de automatización:**
+- Tag karate: @Issue-17
+- Archivo feature: src/test/resources/features/torniquete.feature
+- Escenario: `TC-17 Rechazar eventos invalidos con el torniquete autorizado (S2) [Scenario Outline, 5 ejemplos]`
+- Ejecución individual: `.\gradlew.bat test "-Dkarate.options=--tags @Issue-17"`
+
+**Criterios de aceptación:**
+- [ ] El escenario existe en el .feature con el tag @Issue-17.
+- [ ] La petición usa el endpoint, método y cuerpo indicados.
+- [ ] Las aserciones comprueban el resultado esperado (código HTTP y cuerpo).
+- [ ] El escenario es independiente de los demás (parte de un estado conocido).
+- [ ] Ejecución en GitHub Actions con resultado `automated-passed`.
+```
+
+## Issue #18 — [API] TC-18 Rechazar eventos invalidos con el torniquete girando (S3) [Scenario Outline, 6 ejemplos]
+
+```markdown
+**ID del caso:** TC-18
+**Ejercicio:** Torniquete del Metro Inteligente (1.7) en torniquete.feature (Bloque 1 - Transición de Estados)
+**Requisito:** REQ-TRN-13
+
+**Descripción:** Rechazar eventos invalidos con el torniquete girando (S3) [Scenario Outline, 6 ejemplos].
+
+**Precondiciones:** Torniquete llevado a S3 solo con transiciones válidas (Background reinicia a S1).
+
+**Endpoint(s) y método:**
+- `POST /api/torniquete/evento`
+- `GET /api/torniquete/estado`
+
+**Datos de entrada:** `Validar Tarjeta (true y false), Empujar, Alarma (true y false), Reparar`
+
+**Resultado esperado:** Cada ejemplo: HTTP 200, valida=false, estadoNuevo = estadoAnterior = S3; la forma exacta es accion null o noDefinida=true; el GET confirma que el estado no cambió y que el historial registró el evento rechazado.
+
+**Trazabilidad de automatización:**
+- Tag karate: @Issue-18
+- Archivo feature: src/test/resources/features/torniquete.feature
+- Escenario: `TC-18 Rechazar eventos invalidos con el torniquete girando (S3) [Scenario Outline, 6 ejemplos]`
+- Ejecución individual: `.\gradlew.bat test "-Dkarate.options=--tags @Issue-18"`
+
+**Criterios de aceptación:**
+- [ ] El escenario existe en el .feature con el tag @Issue-18.
+- [ ] La petición usa el endpoint, método y cuerpo indicados.
+- [ ] Las aserciones comprueban el resultado esperado (código HTTP y cuerpo).
+- [ ] El escenario es independiente de los demás (parte de un estado conocido).
+- [ ] Ejecución en GitHub Actions con resultado `automated-passed`.
+```
+
+## Issue #19 — [API] TC-19 Rechazar eventos invalidos con el torniquete en mantenimiento (S4) [Scenario Outline, 6 ejemplos]
+
+```markdown
+**ID del caso:** TC-19
+**Ejercicio:** Torniquete del Metro Inteligente (1.7) en torniquete.feature (Bloque 1 - Transición de Estados)
+**Requisito:** REQ-TRN-14
+
+**Descripción:** Rechazar eventos invalidos con el torniquete en mantenimiento (S4) [Scenario Outline, 6 ejemplos].
+
+**Precondiciones:** Torniquete llevado a S4 solo con transiciones válidas (Background reinicia a S1).
+
+**Endpoint(s) y método:**
+- `POST /api/torniquete/evento`
+- `GET /api/torniquete/estado`
+
+**Datos de entrada:** `Validar Tarjeta (true y false), Empujar, Completar Giro, Alarma (true y false)`
+
+**Resultado esperado:** Cada ejemplo: HTTP 200, valida=false, estadoNuevo = estadoAnterior = S4; la forma exacta es accion null o noDefinida=true; el GET confirma que el estado no cambió y que el historial registró el evento rechazado.
+
+**Trazabilidad de automatización:**
+- Tag karate: @Issue-19
+- Archivo feature: src/test/resources/features/torniquete.feature
+- Escenario: `TC-19 Rechazar eventos invalidos con el torniquete en mantenimiento (S4) [Scenario Outline, 6 ejemplos]`
+- Ejecución individual: `.\gradlew.bat test "-Dkarate.options=--tags @Issue-19"`
+
+**Criterios de aceptación:**
+- [ ] El escenario existe en el .feature con el tag @Issue-19.
+- [ ] La petición usa el endpoint, método y cuerpo indicados.
+- [ ] Las aserciones comprueban el resultado esperado (código HTTP y cuerpo).
+- [ ] El escenario es independiente de los demás (parte de un estado conocido).
+- [ ] Ejecución en GitHub Actions con resultado `automated-passed`.
+```
+
+## Issue #20 — [API] TC-20 Combinacion [true, false, true] - Viento y obstaculo cercano: prioriza el esquive de emergencia (R1)
+
+```markdown
+**ID del caso:** TC-20
+**Ejercicio:** Dron Agrícola Autónomo (2.3) en dronAgricola.feature (Bloque 2 - Tablas de Decisión)
+**Requisito:** REQ-DRN-C5
+
+**Descripción:** Combinacion [true, false, true] - Viento y obstaculo cercano: prioriza el esquive de emergencia (R1).
+
+**Precondiciones:** Historial reiniciado (Background).
+
+**Endpoint(s) y método:**
+- `POST /api/decision/dron-agricola/evaluar`
+
+**Datos de entrada:** `{"valores":[true,false,true]}`
+
+**Resultado esperado:** HTTP 200; accion "Ejecutar maniobra de esquive de emergencia"; reglaIndex 0; noDefinida=false.
+
+**Trazabilidad de automatización:**
+- Tag karate: @Issue-20
+- Archivo feature: src/test/resources/features/dronAgricola.feature
+- Escenario: `TC-20 Combinacion [true, false, true] - Viento y obstaculo cercano: prioriza el esquive de emergencia (R1)`
+- Ejecución individual: `.\gradlew.bat test "-Dkarate.options=--tags @Issue-20"`
+
+**Criterios de aceptación:**
+- [ ] El escenario existe en el .feature con el tag @Issue-20.
+- [ ] La petición usa el endpoint, método y cuerpo indicados.
+- [ ] Las aserciones comprueban el resultado esperado (código HTTP y cuerpo).
+- [ ] El escenario es independiente de los demás (parte de un estado conocido).
+- [ ] Ejecución en GitHub Actions con resultado `automated-passed`.
+```
+
+## Issue #21 — [API] TC-21 Combinacion [false, true, true] - Bateria baja y obstaculo cercano: prioriza el esquive de emergencia (R1)
+
+```markdown
+**ID del caso:** TC-21
+**Ejercicio:** Dron Agrícola Autónomo (2.3) en dronAgricola.feature (Bloque 2 - Tablas de Decisión)
+**Requisito:** REQ-DRN-C6
+
+**Descripción:** Combinacion [false, true, true] - Bateria baja y obstaculo cercano: prioriza el esquive de emergencia (R1).
+
+**Precondiciones:** Historial reiniciado (Background).
+
+**Endpoint(s) y método:**
+- `POST /api/decision/dron-agricola/evaluar`
+
+**Datos de entrada:** `{"valores":[false,true,true]}`
+
+**Resultado esperado:** HTTP 200; accion "Ejecutar maniobra de esquive de emergencia"; reglaIndex 0; noDefinida=false.
+
+**Trazabilidad de automatización:**
+- Tag karate: @Issue-21
+- Archivo feature: src/test/resources/features/dronAgricola.feature
+- Escenario: `TC-21 Combinacion [false, true, true] - Bateria baja y obstaculo cercano: prioriza el esquive de emergencia (R1)`
+- Ejecución individual: `.\gradlew.bat test "-Dkarate.options=--tags @Issue-21"`
+
+**Criterios de aceptación:**
+- [ ] El escenario existe en el .feature con el tag @Issue-21.
+- [ ] La petición usa el endpoint, método y cuerpo indicados.
+- [ ] Las aserciones comprueban el resultado esperado (código HTTP y cuerpo).
+- [ ] El escenario es independiente de los demás (parte de un estado conocido).
+- [ ] Ejecución en GitHub Actions con resultado `automated-passed`.
+```
+
+## Issue #22 — [API] TC-22 Combinacion [true, true, false] - Viento y bateria baja: abortar mision y retorno automatico (R2)
+
+```markdown
+**ID del caso:** TC-22
+**Ejercicio:** Dron Agrícola Autónomo (2.3) en dronAgricola.feature (Bloque 2 - Tablas de Decisión)
+**Requisito:** REQ-DRN-C7
+
+**Descripción:** Combinacion [true, true, false] - Viento y bateria baja: abortar mision y retorno automatico (R2).
+
+**Precondiciones:** Historial reiniciado (Background).
+
+**Endpoint(s) y método:**
+- `POST /api/decision/dron-agricola/evaluar`
+
+**Datos de entrada:** `{"valores":[true,true,false]}`
+
+**Resultado esperado:** HTTP 200; accion "Abortar misión y activar retorno automático (RTL)"; reglaIndex 1; noDefinida=false.
+
+**Trazabilidad de automatización:**
+- Tag karate: @Issue-22
+- Archivo feature: src/test/resources/features/dronAgricola.feature
+- Escenario: `TC-22 Combinacion [true, true, false] - Viento y bateria baja: abortar mision y retorno automatico (R2)`
+- Ejecución individual: `.\gradlew.bat test "-Dkarate.options=--tags @Issue-22"`
+
+**Criterios de aceptación:**
+- [ ] El escenario existe en el .feature con el tag @Issue-22.
+- [ ] La petición usa el endpoint, método y cuerpo indicados.
+- [ ] Las aserciones comprueban el resultado esperado (código HTTP y cuerpo).
+- [ ] El escenario es independiente de los demás (parte de un estado conocido).
+- [ ] Ejecución en GitHub Actions con resultado `automated-passed`.
+```
+
+## Issue #23 — [API] TC-23 Combinacion [true, true, true] - Las tres condiciones a la vez: prioriza el esquive de emergencia (R1)
+
+```markdown
+**ID del caso:** TC-23
+**Ejercicio:** Dron Agrícola Autónomo (2.3) en dronAgricola.feature (Bloque 2 - Tablas de Decisión)
+**Requisito:** REQ-DRN-C8
+
+**Descripción:** Combinacion [true, true, true] - Las tres condiciones a la vez: prioriza el esquive de emergencia (R1).
+
+**Precondiciones:** Historial reiniciado (Background).
+
+**Endpoint(s) y método:**
+- `POST /api/decision/dron-agricola/evaluar`
+
+**Datos de entrada:** `{"valores":[true,true,true]}`
+
+**Resultado esperado:** HTTP 200; accion "Ejecutar maniobra de esquive de emergencia"; reglaIndex 0; noDefinida=false.
+
+**Trazabilidad de automatización:**
+- Tag karate: @Issue-23
+- Archivo feature: src/test/resources/features/dronAgricola.feature
+- Escenario: `TC-23 Combinacion [true, true, true] - Las tres condiciones a la vez: prioriza el esquive de emergencia (R1)`
+- Ejecución individual: `.\gradlew.bat test "-Dkarate.options=--tags @Issue-23"`
+
+**Criterios de aceptación:**
+- [ ] El escenario existe en el .feature con el tag @Issue-23.
 - [ ] La petición usa el endpoint, método y cuerpo indicados.
 - [ ] Las aserciones comprueban el resultado esperado (código HTTP y cuerpo).
 - [ ] El escenario es independiente de los demás (parte de un estado conocido).

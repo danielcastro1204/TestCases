@@ -30,8 +30,9 @@ build.gradle                        Dependencias y paso de -Dkarate.options / -D
 src/test/java/runner/runner.java    Runner JUnit 5 (ejecución serial, reportes en target/)
 src/test/resources/karate-config.js baseUrl y timeouts
 src/test/resources/features/
-    torniquete.feature                   5 escenarios (Torniquete)  TC-01..TC-05
-    dronAgricola.feature            5 escenarios (Dron)        TC-06..TC-10
+    torniquete.feature              14 casos (Torniquete)  TC-01..TC-05, TC-11..TC-19
+    dronAgricola.feature            9 escenarios (Dron)    TC-06..TC-10, TC-20..TC-23
+    helpers/enviarEvento.feature    Auxiliar (@ignore, no es prueba)
 docs/matriz-pruebas.md              Catálogo de casos
 docs/trazabilidad.md                Requisito → caso → escenario → tag → Issue (+ Project Board)
 docs/issues.md                      Texto de cada Issue
@@ -63,8 +64,25 @@ docs/sustentacion-oral.md           Guía para la sustentación
 | TC-08 | Regla R2: abortar misión y RTL | `@REQ-DRN-R2 @Issue-8` |
 | TC-09 | Regla R3: abortar misión y RTL | `@REQ-DRN-R3 @Issue-9` |
 | TC-10 | Regla R4: continuar ruta | `@REQ-DRN-R4 @Issue-10` |
+| TC-11 | Empujar con tarjeta validada (S2→S3) | `@REQ-TRN-06 @Issue-11` |
+| TC-12 | Completar giro (S3→S1) | `@REQ-TRN-07 @Issue-12` |
+| TC-13 | Alarma desde bloqueado (S1→S4) | `@REQ-TRN-08 @Issue-13` |
+| TC-14 | Alarma con paso autorizado (S2→S4) | `@REQ-TRN-09 @Issue-14` |
+| TC-15 | Reparar (S4→S1) | `@REQ-TRN-10 @Issue-15` |
+| TC-16 | Rechazar eventos inválidos desde S1 (Outline, 5 ejemplos) | `@REQ-TRN-11 @Issue-16` |
+| TC-17 | Rechazar eventos inválidos desde S2 (Outline, 5 ejemplos) | `@REQ-TRN-12 @Issue-17` |
+| TC-18 | Rechazar eventos inválidos desde S3 (Outline, 6 ejemplos) | `@REQ-TRN-13 @Issue-18` |
+| TC-19 | Rechazar eventos inválidos desde S4 (Outline, 6 ejemplos) | `@REQ-TRN-14 @Issue-19` |
+| TC-20 | Dron [true,false,true] → esquive (R1) | `@REQ-DRN-C5 @Issue-20` |
+| TC-21 | Dron [false,true,true] → esquive (R1) | `@REQ-DRN-C6 @Issue-21` |
+| TC-22 | Dron [true,true,false] → RTL (R2) | `@REQ-DRN-C7 @Issue-22` |
+| TC-23 | Dron [true,true,true] → esquive (R1) | `@REQ-DRN-C8 @Issue-23` |
 
-Detalle en `docs/matriz-pruebas.md` y `docs/trazabilidad.md`. Total: **10 declaraciones `Scenario` explícitas** (sin `Scenario Outline`).
+TC-03 y TC-11 a TC-15 cubren las **6 transiciones válidas** del torniquete (verificadas probando los 4 estados con los 5 eventos y ambas guardias): S1→S2, S2→S3, S3→S1, S1→S4, S2→S4 y S4→S1. Las otras **22 combinaciones** estado/evento/guardia son inválidas (HTTP 200, `valida:false`, el estado no cambia) y quedan cubiertas por TC-04 y los `Scenario Outline` TC-16 a TC-19 (uno por estado de origen). La respuesta inválida tiene dos formas: `accion:null` o `noDefinida:true`.
+
+**Dron:** las 8 combinaciones de las 3 condiciones están cubiertas: R1–R4 (documentadas, TC-07 a TC-10) y 4 combinaciones adicionales (TC-20 a TC-23) cuyo resultado se **observó en la API real** (no está documentado como regla): se resuelven por prioridad obstáculo > viento > batería.
+
+Detalle en `docs/matriz-pruebas.md` y `docs/trazabilidad.md`. Total: **19 `Scenario` explícitos + 4 `Scenario Outline`** (22 ejemplos) = 23 casos y **41 ejecuciones** en el reporte de Karate.
 
 ## 8. Comandos
 
@@ -103,16 +121,17 @@ Se ejecuta en `push` y `pull_request` a `main`/`develop` y manualmente (`workflo
 | Filtro por tag (`@Issue-9` → 1; `@navegacionDron` → 5) | Funciona |
 | Prueba negativa (valor alterado a propósito) | La suite falla como debe |
 | Tag inexistente | Gradle pasa con **0 escenarios** → el workflow lo trata como fallo |
-| Ejecución contra la **API real** de Render | **Pendiente** (el entorno de desarrollo no tenía acceso de red a Render) |
-| Ejecución en GitHub Actions | **Pendiente** (no se ha hecho push) |
-| Issues #2–#10 y Project Board | **Pendientes** (ver `docs/trazabilidad.md`); hoy solo existe el Issue #1 |
+| Ejecución contra la **API real** de Render | **10 de 10 aprobados** (antes de agregar TC-11 a TC-23) |
+| Ejecución en GitHub Actions | **Aprobada**: [run 38319898395](https://github.com/danielcastro1204/TestCases/actions/runs/38319898395), 10 ejecutados / 10 aprobados / 0 fallidos |
+| Issues #1–#10 y Project Board *TestCases-Karate* | Creados en GitHub |
+| Escenarios TC-11 a TC-23 (transiciones válidas e inválidas restantes, combinaciones del dron) | Suite completa de 41 ejecuciones aprobada contra un simulador local; falta ejecutarla contra la API real y crear los Issues #11–#23 |
 
-## 12. Acciones manuales pendientes
+## 12. Acciones pendientes
 
-1. `.\gradlew.bat clean test` en tu equipo y anotar el resultado real en `docs/matriz-pruebas.md`.
-2. `gh auth login` y ejecutar `docs\crear-issues.ps1` (reutiliza #1, crea #2–#10).
-3. Crear el Project Board (pasos en `docs/trazabilidad.md`).
-4. Revisar `git status`, hacer commit y push; ejecutar el workflow y probarlo por tag. El directorio `target/` está versionado en el repositorio; para dejar de versionarlo: `git rm -r --cached target`.
+1. Ejecutar `docs\crear-issues.ps1` otra vez para crear los Issues #11–#23 (actualiza los existentes sin duplicar) y agregarlos al tablero; hacer commit y push para correr los 15 escenarios en Actions.
+2. Ejecutar el workflow manualmente por tag para algunos Issues (ej. `Issue-4`) y comprobar el comentario y la etiqueta `automated-passed`.
+3. Mover los Issues aprobados a *Done* en el tablero.
+4. Opcional: dejar de versionar `target/` con `git rm -r --cached target`.
 
 ## 13. Limitaciones
 

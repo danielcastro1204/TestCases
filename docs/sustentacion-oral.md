@@ -4,13 +4,13 @@
 
 1. **Objetivo.** Automatizar pruebas de backend de caja negra con Karate, con trazabilidad (Issues) e integración continua (GitHub Actions).
 2. **Selección.** Bloque 1: Torniquete del Metro (ejercicio 1.7) dentro de `torniquete.feature`; el 1.3 Encendido/Apagado no existe en el servidor (devuelve 404, lo comprobé con `GET /api/encendido-apagado/estado` y con `/api/ejercicios`). Bloque 2: Dron Agrícola (2.3) en `dronAgricola.feature`.
-3. **Transición de estados.** Dibujé la máquina S1→S2→S3→S1 y S1→S4→S1. Probé: consulta, reinicio, una transición válida (`Validar Tarjeta` con guardia `true`), una inválida (`Empujar` en S1) y una secuencia seguida de reinicio. En una inválida la API responde 200 con `valida:false` y el estado no cambia; por eso verifico el cuerpo **y** hago un GET posterior.
-4. **Tabla de decisión.** Tres condiciones (viento, batería, obstáculo) y cuatro reglas: R1 `[false,false,true]`, R2 `[true,false,false]`, R3 `[false,true,false]`, R4 `[false,false,false]`. Un escenario por regla; R2 y R3 dan la misma acción pero son reglas distintas (`reglaIndex` 1 y 2).
+3. **Transición de estados.** Dibujé la máquina S1→S2→S3→S1 y S1→S4→S1. Probé: consulta, reinicio, las 6 transiciones válidas (S1→S2, S2→S3, S3→S1, S1→S4, S2→S4, S4→S1; TC-03 y TC-11 a TC-15), las 22 inválidas (TC-04 y los Scenario Outline TC-16 a TC-19, uno por estado) y una secuencia seguida de reinicio. En una inválida la API responde 200 con `valida:false` y el estado no cambia; por eso verifico el cuerpo **y** hago un GET posterior.
+4. **Tabla de decisión.** Tres condiciones (viento, batería, obstáculo) y cuatro reglas: R1 `[false,false,true]`, R2 `[true,false,false]`, R3 `[false,true,false]`, R4 `[false,false,false]`. Un escenario por regla; R2 y R3 dan la misma acción pero son reglas distintas (`reglaIndex` 1 y 2). Además cubrí las 8 combinaciones posibles: las 4 no documentadas (TC-20 a TC-23) se resuelven por prioridad obstáculo > viento > batería, comportamiento que observé en la API.
 5. **Karate.** Usa la sintaxis Gherkin pero sin Step Definitions: `url`, `path`, `method`, `request`, `status` y `match` ya son pasos ejecutables. El runner Java (`runner.java`) solo arranca la suite.
 6. **Independencia.** Cada feature tiene un `Background` que reinicia la API (`torniquete/reiniciar`, `decision/dron-agricola/reiniciar`). La ejecución es serial (`parallel(1)`).
 7. **Trazabilidad.** Cada escenario tiene `@Issue-N` (más `@REQ-...`). El workflow extrae N del tag, comenta el Issue y pone `automated-passed/failed`.
 8. **CI.** `ci.yml` corre `gradlew clean test`, publica reportes aunque falle y falla el workflow si hay fallos o 0 escenarios.
-9. **Resultados reales.** Contra un simulador local del contrato: 10/10. Contra la API real de Render y en GitHub Actions: [completar con el resultado de tu ejecución].
+9. **Resultados reales.** Contra un simulador local del contrato: 10/10. Contra la API real de Render y en GitHub Actions: 10 de 10 aprobados en GitHub Actions (run 38319898395); ahora son 23 casos (41 ejecuciones) con TC-11 a TC-23.
 
 ## 2. Preguntas técnicas (con respuesta)
 
@@ -33,7 +33,8 @@
 17. **¿Cómo se publican los reportes?** `actions/upload-artifact` con `if: always()`: `karate-reports` (HTML) y `test-results` (JUnit/Gradle).
 18. **¿Por qué controlar el estado remoto?** El servidor guarda estado entre llamadas; sin `reiniciar` un escenario heredaría el estado/historial de otro y los resultados dependerían del orden.
 19. **¿Cómo ejecuto un solo escenario?** `.\gradlew.bat test "-Dkarate.options=--tags @Issue-4"`; en Actions, `testTag = Issue-4`.
-20. **¿Dónde veo evidencia de un fallo?** `target/karate-reports/karate-summary.html` → escenario → paso en rojo con request/response; en Actions, artefacto `karate-reports` y el resumen del job.
+20. **¿Cuándo uso Scenario Outline?** Cuando varias filas comparten los mismos pasos y solo cambian los datos: TC-16 a TC-19 prueban 22 eventos inválidos con una sola plantilla y una tabla `Examples` por estado de origen; el helper `helpers/enviarEvento.feature` lleva el torniquete al estado previo.
+21. **¿Dónde veo evidencia de un fallo?** `target/karate-reports/karate-summary.html` → escenario → paso en rojo con request/response; en Actions, artefacto `karate-reports` y el resumen del job.
 
 ## 3. Modificaciones en vivo (con verificación)
 
