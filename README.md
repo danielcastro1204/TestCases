@@ -109,7 +109,9 @@ Se ejecuta en `push` y `pull_request` a `main`/`develop` y manualmente (`workflo
 
 **Ejecución manual por tag:** Actions → *CI / CD Pipeline* → *Run workflow* → campo `testTag` = `Issue-4` o `@Issue-4`. El valor se valida (solo letras, números, `-`, `_`), se normaliza a `@Issue-4` y se pasa a Karate. Vacío = suite completa.
 
-**Actualización automática del Issue:** con un tag `@Issue-N` el workflow comprueba que el Issue existe, crea las etiquetas `automated-passed`/`automated-failed` si faltan, quita la contraria, pone la correcta y comenta `PASSED`/`FAILED` con enlace a la ejecución y fecha. Usa `GITHUB_TOKEN` con `issues: write`; no hay secretos en el repositorio.
+**Etiquetar todos los Issues en una sola ejecución:** Actions → *Run workflow* con `testTag` **vacío**. Corre los 41 casos y, con los JSON de Karate, comenta y etiqueta **cada** Issue `#1` a `#23` (`automated-passed` si todos sus escenarios pasaron, `automated-failed` si alguno falló). Los `push` y `pull_request` solo ejecutan las pruebas, sin tocar Issues.
+
+**Actualización automática de un solo Issue:** con un tag `@Issue-N` el workflow comprueba que el Issue existe, crea las etiquetas `automated-passed`/`automated-failed` si faltan, quita la contraria, pone la correcta y comenta `PASSED`/`FAILED` con enlace a la ejecución y fecha. Usa `GITHUB_TOKEN` con `issues: write`; no hay secretos en el repositorio.
 
 ## 11. Estado verificado (honesto)
 

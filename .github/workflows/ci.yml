@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       testTag:
-        description: 'Tag de Karate a ejecutar, con o sin @ (ej: Issue-3 o @Issue-3). Vacío = suite completa.'
+        description: 'Tag de Karate a ejecutar, con o sin @ (ej: Issue-3 o @Issue-3). Vacío = suite completa y se actualizan TODOS los Issues (@Issue-N) según su resultado.'
         required: false
         default: ''
 
@@ -197,6 +197,73 @@ jobs:
             ].join('\n');
             await github.rest.issues.createComment({ owner, repo, issue_number, body });
             core.info(`Issue #${issue_number} actualizado: ${newLabel}`);
+
+      # Ejecución manual con testTag vacío: suite completa y actualización de TODOS los Issues.
+      # El resultado de cada Issue sale de los JSON de Karate: un Issue es PASSED si todos sus
+      # escenarios/ejemplos pasaron y FAILED si alguno falló.
+      - name: Update all GitHub Issues from Karate results
+        if: always() && github.event_name == 'workflow_dispatch' && steps.tag.outputs.tag == ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const dir = 'target/karate-reports';
+            if (!fs.existsSync(dir)) { core.warning('No existe ' + dir + ': no se actualiza ningún Issue.'); return; }
+            // 1. Resultado por Issue a partir de los JSON de Cucumber que genera Karate
+            const porIssue = {};
+            for (const f of fs.readdirSync(dir).filter(n => /^features\..*\.json$/.test(n))) {
+              for (const feature of JSON.parse(fs.readFileSync(dir + '/' + f, 'utf8'))) {
+                for (const el of (feature.elements || [])) {
+                  if (el.type !== 'scenario') continue;
+                  const fallo = (el.steps || []).some(s => !s.result || s.result.status !== 'passed');
+                  for (const t of (el.tags || [])) {
+                    const m = /^@Issue-(\d+)$/.exec(t.name);
+                    if (!m) continue;
+                    const r = porIssue[m[1]] || (porIssue[m[1]] = { total: 0, fallidos: 0 });
+                    r.total++; if (fallo) r.fallidos++;
+                  }
+                }
+              }
+            }
+            const numeros = Object.keys(porIssue).map(Number).sort((a, b) => a - b);
+            if (numeros.length === 0) { core.warning('No se encontraron tags @Issue-N en los reportes.'); return; }
+            const { owner, repo } = context.repo;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            // 2. Asegurar que las etiquetas existen
+            for (const [name, color] of [['automated-passed', '2da44e'], ['automated-failed', 'd1242f']]) {
+              try { await github.rest.issues.getLabel({ owner, repo, name }); }
+              catch (e) { if (e.status === 404) { await github.rest.issues.createLabel({ owner, repo, name, color }); } else { throw e; } }
+            }
+            // 3. Actualizar cada Issue (etiqueta coherente + comentario con el resultado real)
+            const resumen = [];
+            for (const n of numeros) {
+              const { total, fallidos } = porIssue[n];
+              const passed = fallidos === 0;
+              const nueva = passed ? 'automated-passed' : 'automated-failed';
+              const vieja = passed ? 'automated-failed' : 'automated-passed';
+              try {
+                await github.rest.issues.get({ owner, repo, issue_number: n });
+              } catch (e) {
+                core.warning(`El Issue #${n} no existe o no es accesible: ${e.message}`);
+                resumen.push(`#${n}: no existe`); continue;
+              }
+              try { await github.rest.issues.removeLabel({ owner, repo, issue_number: n, name: vieja }); }
+              catch (e) { if (e.status !== 404) core.warning(`No se pudo quitar ${vieja} de #${n}: ${e.message}`); }
+              await github.rest.issues.addLabels({ owner, repo, issue_number: n, labels: [nueva] });
+              await github.rest.issues.createComment({ owner, repo, issue_number: n, body: [
+                `${passed ? '✅' : '❌'} **Resultado de automatización: ${passed ? 'PASSED' : 'FAILED'}**`,
+                '',
+                `- Tag: \`@Issue-${n}\``,
+                `- Escenarios/ejemplos ejecutados: ${total} (fallidos: ${fallidos})`,
+                `- Ejecución (suite completa): ${runUrl}`,
+                `- Fecha: ${new Date().toISOString()}`,
+                '',
+                '_Actualizado automáticamente por GitHub Actions_'
+              ].join('\n') });
+              resumen.push(`#${n}: ${passed ? 'PASSED' : 'FAILED'}`);
+            }
+            core.info(resumen.join('\n'));
+            await core.summary.addHeading('Issues actualizados').addList(resumen).write();
 
       # El workflow debe reflejar el fallo real aunque los pasos anteriores usaran continue-on-error
       - name: Fail workflow if tests failed
